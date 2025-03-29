@@ -5,6 +5,7 @@ description = "Swift bindings to read battery level and state"
 authors = ["Aengus Wright<aengus@horsesporttechnology.au>"]
 edition = "2021"
 readme = "README.md"
+maintenance = { status = "passively-maintained" }
 
 [dependencies]
 serde = { version = "1.0.214", features = ["derive"] }
@@ -12,6 +13,3 @@ swift-rs = "1.0.5"
 
 [build-dependencies]
 swift-rs = { version = "1.0.5", features = ["build"] }
-
-[badges]
-status = "passively-maintained"
