@@ -1,8 +1,8 @@
-use swift_rs::{swift, Int, Float};
+use swift_rs::{swift, Float, Int};
 
 /// A safe wrapper around an unsafe call to swift UIKit
 /// to get the current battery level for an iOS device.
-/// 
+///
 /// Returns an enum with the following values:
 /// - `Unknown`: maps to the UIKit unknown status
 /// - `Discharging(f32)`: Not plugged in, the f32 value
@@ -15,18 +15,18 @@ use swift_rs::{swift, Int, Float};
 /// use swift_bat::get_battery_state;
 /// use swift_bat::BatteryState;
 /// use swift_bat::Error;
-/// 
+///
 /// let battery = unsafe { get_battery_state() };
 /// assert_ne!(battery, BatteryState::Error)
 /// ```
-/// 
+///
 /// BatteryState implements serde and is represented
 /// as an internally tagged object, with state being
 /// a string of the enum tag, and content being the
 /// battery level.
-pub async fn get_battery_state() -> crate::BatteryState {
+pub fn get_battery_state() -> crate::BatteryState {
     let battery = unsafe { get_swift_battery() };
-    return (&*battery).into()
+    (&*battery).into()
 }
 
 /// this function FFIs to swift. Must always be
@@ -40,17 +40,17 @@ swift!(
 #[repr(C)]
 pub(crate) struct SwiftBattery {
     level: Float,
-    state: Int
+    state: Int,
 }
 
 /// Rust version of the battery state.
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(tag="status", content="level")]
+#[serde(tag = "status", content = "level")]
 pub enum BatteryState {
     Charging(f32),
     Discharging(f32),
     Unknown,
-    Error
+    Error,
 }
 
 impl From<&SwiftBattery> for BatteryState {
@@ -60,7 +60,7 @@ impl From<&SwiftBattery> for BatteryState {
             1 => BatteryState::Discharging(bat.level),
             2 => BatteryState::Charging(bat.level),
             3 => BatteryState::Charging(1.0),
-            _ => BatteryState::Error
+            _ => BatteryState::Error,
         }
     }
 }
@@ -112,3 +112,4 @@ mod tests {
         assert_eq!(battery, BatteryState::Charging(0.76));
     }
 }
+
